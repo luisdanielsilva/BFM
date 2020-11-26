@@ -1,0 +1,33 @@
+Open Point List
+
+1.
+	1.1 - DOSE does not need movement from the tray. Tray should be moved manually
+	1.2 - CAL does not need movement from the tray. Tray should be moved manually
+
+2. pay Joel - 140€
+
+3. order tube
+
+4. Sensor might need pull-downs to avoid being triggered when power is disconnected
+
+5. fix sensors and metal on tray to sense end of course
+
+6. produce new parts for holding the needle in place without movement
+
+7. produce a prototype board for TMC5160 to connect it to the system and remove old driver
+
+8. measure if the tray goes to the correct positions (tray + weight)
+	8.1 produce new tray top board (less positions, thinner)
+	8.2 produce new corners (smaller in height 1/5)
+
+9. Check distances for movement as soon as I have the tray assembled again
+
+10. buy loctite 270 and metal disks for metal sensor and glue to hold screws in place
+
+11. Fetch tray from Tomé (I have to pay)
+
+12. Labels missing on physical buttons
+
+13. Test positions and distance. Place debug messages for tray positioning
+
+
