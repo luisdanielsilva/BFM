@@ -59,7 +59,10 @@ int eepromReadInt(int address);
 // 60 - performed entire sequence. separate stepsPerRevolution for pumps and tray. adjusted volumes to be dispensed in CAL and DOSE modes. Minor delays added to the main sequence
 // 61 - changed LED for each sensor directly on the interrupts. REMOVED LINE: "int menu_items_limit = NUM_OF_MENU_ITEMS - 1;" Changed Sensor LED's. Switched driver, hence also the settings. Enable eeprom load_settings()
 // 62 - IT WORKS!!!!
-// 63 -
+// 63 - moved to VSCODE
+// 64 - 
+// 65 - 
+// 66 - Used GIT to commit the first version
 
 // BUTTONS
 #define BUTTON_AUTO_MAN 17
