@@ -30,4 +30,4 @@ Open Point List
 
 13. Test positions and distance. Place debug messages for tray positioning
 
-
+14. change calibration distance to tray_position_calibration_interval

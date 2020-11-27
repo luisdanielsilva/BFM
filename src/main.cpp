@@ -145,6 +145,7 @@ const int leadscrew_pitch = 8; // FIXED
 // POSITIONS SETTINGS
 const long int tray_position_interval = 20;         // distance between each position
 const long int tray_position_start_stop_delta = 12; // used in calibration. distance between sensors and first/last position
+const long int tray_position_calibration_interval = 600; // used in calibration. distance between sensors and first/last position
 long int tray_position_movement = 0;
 #define MINUTES 60
 
