@@ -24,8 +24,6 @@ Open Point List
 
 10. buy loctite 270 and metal disks for metal sensor and glue to hold screws in place
 
-11. Fetch tray from Tomé (I have to pay)
-
 12. Labels missing on physical buttons
 
 13. Test positions and distance. Place debug messages for tray positioning
