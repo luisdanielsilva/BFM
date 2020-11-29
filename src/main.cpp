@@ -10,8 +10,8 @@ void clear_led(int led);
 int tray_calibration();
 void BlinkLED(int led, int time02, int times);
 void rotate_tray(long int _speed, long int _position_space_mm, int step_pin1, int enable_pin1);
-void rotate_pump(long int volume_to_fill, int step_pin1, int enable_pin1, int step_pin2, int enable_pin2, int step_pin3, int enable_pin3);
-void rotate_motor(long int _speed, long int temp_motor_steps, int step_pin1, int enable_pin1);
+void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin1, int step_pin2, int enable_pin2, int step_pin3, int enable_pin3);
+void rotate_motor(unsigned long int _speed, long int temp_motor_steps, int step_pin1, int enable_pin1);
 long int calculate_speed(long int _speed, long int _stepsPerRevolution);
 long int calculate_travel_mm(long int ftravel_mm);
 void eepromWriteInt(int address, int value);
@@ -123,7 +123,7 @@ long int system_calibration_calculated = 0.0;
 const long int stepsPerRevolution_tray = 200;        // number of steps needed for one revolution
 const long int stepsPerRevolution_pumps = 1600;      // number of steps needed for one revolution
 const int Tray_Speed = 1200;                         // Speed in RPM
-const int Pump_Speed = 100;                          // Speed in RPM
+const int Pump_Speed = 400;                          // Speed in RPM
 
 // TRAY
 int tray_next_position = 0;               // next position
@@ -185,7 +185,8 @@ enum menu_list
   PUMPS,
   PUMP_DIR,
   TRAY,
-  SAVE_SETTINGS
+  SAVE_SETTINGS,
+  RESET_SETTINGS
 };
 
 enum menu_mode
@@ -206,9 +207,9 @@ enum menu_type
 boolean flag_menu_cursor = LOW;
 
 // MENU --------------------------------------------------------------------------------------------------
-#define MAX_NUM_OF_OPTIONS 4
-#define NUM_OF_MENU_ITEMS 8
-#define VALUE_MAX_DIGITS 4
+#define MAX_NUM_OF_OPTIONS      4
+#define NUM_OF_MENU_ITEMS       9
+#define VALUE_MAX_DIGITS        4
 #define PUMP1 0
 #define PUMP2 1
 #define PUMP3 2
@@ -332,6 +333,21 @@ void eeprom_loadsettings()
   menu[5].option_selected = eepromReadInt(8); // PUMP DIRECTION
   delay(SECONDS05);
   Serial.println(F("EEPROM SETTINGS LOADED !!"));
+}
+
+void eeprom_resetsettings()
+{
+  menu[1].option_selected = 0;             // MODE
+  
+  menu[2].value = 0;                       // FILLING VOLUME
+  
+  menu[3].value = 0;                       // CALIBRATION VOLUME
+  
+  menu[4].option_selected = 0;             // PUMP SELECTION
+  
+  menu[5].option_selected = 0;             // PUMP DIRECTION
+
+  Serial.println("Settings reset!");
 }
 
 boolean update_lcd()
@@ -633,7 +649,7 @@ void dispense(long int volume_to_fill, int pumps)
   }
 }
 
-void rotate_pump(long int volume_to_fill, int step_pin1, int enable_pin1, int step_pin2, int enable_pin2, int step_pin3, int enable_pin3)
+void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin1, int step_pin2, int enable_pin2, int step_pin3, int enable_pin3)
 {
   long int temp_speed_us = 0;
 
@@ -807,7 +823,7 @@ void rotate_tray(long int _speed, long int _position_space_mm, int step_pin1, in
   }
 }
 
-void rotate_motor(long int _speed, long int temp_motor_steps, int step_pin1, int enable_pin1)
+void rotate_motor(unsigned long int _speed, long int temp_motor_steps, int step_pin1, int enable_pin1)
 {
 
   digitalWrite(enable_pin1, LOW); // TURN-ON DRIVER
@@ -823,7 +839,7 @@ void rotate_motor(long int _speed, long int temp_motor_steps, int step_pin1, int
       break;
   }
   Serial.println("MOTOR STOPS!");
-  delayMicroseconds(1000000);
+  delayMicroseconds((unsigned int)1000000);
   digitalWrite(enable_pin1, HIGH); // TURN-OFF DRIVER
 
   Serial.print("Motor Steps: ");
@@ -1078,7 +1094,7 @@ void setup()
   menu[5].suffix = "EMPTY";
   menu[5].option_selected = 0;
 
-  menu[6].name_ = "TRAY"; // TRAY MENU
+  menu[6].name_ = "TRAY";                               // TRAY MENU
   menu[6].type = OPTION;
   menu[6].value = 0;
   menu[6].decimals = 0;
@@ -1090,7 +1106,7 @@ void setup()
   menu[6].suffix = "EMPTY";
   menu[6].option_selected = 0;
 
-  menu[7].name_ = "SAVE SETTINGS"; // SAVE SETTINGS MENU
+  menu[7].name_ = "SAVE SETTINGS";                      // SAVE SETTINGS MENU
   menu[7].type = ACTION;
   menu[7].value = 0;
   menu[7].decimals = 0;
@@ -1101,6 +1117,18 @@ void setup()
   menu[7].options[3] = "EMPTY";
   menu[7].suffix = "EMPTY";
   menu[7].option_selected = 0;
+
+  menu[8].name_ = "RESET SETTINGS";                     // RESET SETTINGS MENU
+  menu[8].type = ACTION;
+  menu[8].value = 0;
+  menu[8].decimals = 0;
+  menu[8].lim = 0;
+  menu[8].options[0] = "EMPTY";
+  menu[8].options[1] = "EMPTY";
+  menu[8].options[2] = "EMPTY";
+  menu[8].options[3] = "EMPTY";
+  menu[8].suffix = "EMPTY";
+  menu[8].option_selected = 0;
 
   eeprom_loadsettings(); // load settings previously saved - TESTED
 
@@ -1253,18 +1281,18 @@ void loop()
 
     if (entered_valueoption == LOW)
     {
-      // move menu position up by 1
-      if (menu_line_1 == 0)
+      // move menu position UP by 1 ->> UP BUTTON CLICK
+      if (menu_line_1 == START)
       {
-        menu_line_1 = SAVE_SETTINGS;
+        menu_line_1 = RESET_SETTINGS;
         menu_line_2 = START;
       }
       else
       {
-        if (menu_line_2 == 0)
+        if (menu_line_2 == START)
         {
-          menu_line_2 = SAVE_SETTINGS;
-          menu_line_1 = TRAY;
+          menu_line_2 = RESET_SETTINGS;
+          menu_line_1 = SAVE_SETTINGS;
         }
         else
         {
@@ -1273,6 +1301,10 @@ void loop()
         }
       }
       flag_lcd_update_change_value = HIGH;
+      Serial.print(F("MENU LINE 1 -> "));
+      Serial.println(menu_line_1);
+      Serial.print(F("MENU LINE 2 -> "));
+      Serial.println(menu_line_2);
     }
   }
 
@@ -1349,15 +1381,15 @@ void loop()
 
     if (entered_valueoption == LOW)
     {
-      // move menu position DOWN by 1
-      if (menu_line_2 == SAVE_SETTINGS)
+      // move menu position DOWN by 1 ->> DOWN BUTTON CLICK
+      if (menu_line_2 == RESET_SETTINGS)
       {
-        menu_line_1 = SAVE_SETTINGS;
+        menu_line_1 = RESET_SETTINGS;
         menu_line_2 = START;
       }
       else
       {
-        if (menu_line_1 == SAVE_SETTINGS)
+        if (menu_line_1 == RESET_SETTINGS)
         {
           menu_line_1 = START;
           menu_line_2 = MODE;
@@ -1369,6 +1401,10 @@ void loop()
         }
       }
       flag_lcd_update_change_value = HIGH;
+      Serial.print(F("MENU LINE 1 -> "));
+      Serial.println(menu_line_1);
+      Serial.print(F("MENU LINE 2 -> "));
+      Serial.println(menu_line_2);
     }
   }
 
@@ -1679,6 +1715,10 @@ void loop()
       if (menu_line_1 == SAVE_SETTINGS)
       {
         eeprom_savesettings();
+      }
+      if (menu_line_1 == RESET_SETTINGS)
+      {
+        eeprom_resetsettings();
       }
 
       menu[menu_line_1].option_selected = cursor_position; // When pressing OK for the second time, use the cursor position to record the selected OPTION

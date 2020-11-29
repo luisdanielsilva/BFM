@@ -29,3 +29,8 @@ Open Point List
 13. Test positions and distance. Place debug messages for tray positioning
 
 14. change calibration distance to tray_position_calibration_interval
+
+15. Add a default setting menu option that clears everything and resets values
+
+16. - When at calibration we cannot select more than 1 pump
+	- When at DOSE we can select any number of pumps
