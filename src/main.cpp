@@ -120,10 +120,10 @@ long int system_calibration_offset = 0.0;
 long int system_calibration_calculated = 0.0;
 
 // MOTORS
-const long int stepsPerRevolution_tray = 200;        // number of steps needed for one revolution
-const long int stepsPerRevolution_pumps = 1600;      // number of steps needed for one revolution
-const int Tray_Speed = 1200;                         // Speed in RPM
-const int Pump_Speed = 400;                          // Speed in RPM
+const long int stepsPerRevolution_tray = 200;         // number of steps needed for one revolution
+const long int stepsPerRevolution_pumps = 200;        // number of steps needed for one revolution
+const int Tray_Speed = 1200;                          // Speed in RPM
+const int Pump_Speed = 1500;                          // Speed in RPM
 
 // TRAY
 int tray_next_position = 0;               // next position
@@ -656,8 +656,9 @@ void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin
   // convert global Pump_Speed from RPM to microseconds
   temp_speed_us = calculate_speed(Pump_Speed, stepsPerRevolution_pumps);
   
-  //Serial.print(F("PUMP SHOULD BE RUNNING AT 100 uS: "));
-  //Serial.println(temp_speed_us);
+  Serial.print(F("PUMP SPEED: "));
+  Serial.print(temp_speed_us);
+  Serial.print(F(" uS"));
 
   digitalWrite(LED_PUMP, HIGH); // turn ON pump LED
 
@@ -683,8 +684,6 @@ void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin
       delayMicroseconds(temp_speed_us);
       digitalWrite(PUMP1_STEP, LOW);
       delayMicroseconds(temp_speed_us);
-      Serial.print("Step: ");
-      Serial.println(i);
     }
 
     digitalWrite(enable_pin1, HIGH);
@@ -867,15 +866,15 @@ long int calculate_speed(long int _speed, long int _stepsPerRevolution)
   float steps_per_second = 0; // truncating a float to int -> error chance here
   float temp_speed = 0;
 
-  //  Serial.println("");
-  //  Serial.print("FUNCTION CALCULATE_SPEED: Calculate_speed: ");
-  //  Serial.print(_speed);
-  //  Serial.println(" RPM");
+    Serial.println("");
+    Serial.print("FUNCTION CALCULATE_SPEED: Calculate_speed: ");
+    Serial.print(_speed);
+    Serial.println(" RPM");
 
   steps_per_second = (_speed * _stepsPerRevolution) / MINUTES;
 
-  //  Serial.print("FUNCTION CALCULATE_SPEED: steps_per_second: ");
-  //  Serial.println(steps_per_second);
+    Serial.print("FUNCTION CALCULATE_SPEED: steps_per_second: ");
+    Serial.println(steps_per_second);
 
   temp_speed = (1 / steps_per_second);
 
@@ -884,9 +883,9 @@ long int calculate_speed(long int _speed, long int _stepsPerRevolution)
 
   temp_speed = (int)temp_speed;
 
-  //  Serial.print("FUNCTION CALCULATE_SPEED: _speed in microseconds:  ");
-  //  Serial.print(temp_speed);
-  //  Serial.println(" uS");
+  Serial.print("CALCULATE_SPEED: ");
+  Serial.print(temp_speed);
+  Serial.println(" uS");
 
   return temp_speed;
 }
@@ -1301,10 +1300,6 @@ void loop()
         }
       }
       flag_lcd_update_change_value = HIGH;
-      Serial.print(F("MENU LINE 1 -> "));
-      Serial.println(menu_line_1);
-      Serial.print(F("MENU LINE 2 -> "));
-      Serial.println(menu_line_2);
     }
   }
 
@@ -1401,10 +1396,6 @@ void loop()
         }
       }
       flag_lcd_update_change_value = HIGH;
-      Serial.print(F("MENU LINE 1 -> "));
-      Serial.println(menu_line_1);
-      Serial.print(F("MENU LINE 2 -> "));
-      Serial.println(menu_line_2);
     }
   }
 

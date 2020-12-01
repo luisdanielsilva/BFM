@@ -4,6 +4,9 @@ Open Point List
 	1.1 - DOSE does not need movement from the tray. Tray should be moved manually
 	1.2 - CAL does not need movement from the tray. Tray should be moved manually
 
+	- When at calibration we cannot select more than 1 pump
+	- When at DOSE we can select any number of pumps
+
 2. pay Joel - 140€
 
 3. order tube
@@ -30,7 +33,5 @@ Open Point List
 
 14. change calibration distance to tray_position_calibration_interval
 
-15. Add a default setting menu option that clears everything and resets values
+15. Remove tray advance on main sequence
 
-16. - When at calibration we cannot select more than 1 pump
-	- When at DOSE we can select any number of pumps
