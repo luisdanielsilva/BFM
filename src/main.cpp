@@ -123,28 +123,28 @@ long int system_calibration_calculated = 0.0;
 const long int stepsPerRevolution_tray = 200;         // number of steps needed for one revolution
 const long int stepsPerRevolution_pumps = 200;        // number of steps needed for one revolution
 const int Tray_Speed = 1200;                          // Speed in RPM
-const int Pump_Speed = 1500;                          // Speed in RPM
+const int Pump_Speed = 1000;                          // Speed in RPM
 
 // TRAY
-int tray_next_position = 0;               // next position
-int tray_current_position = 0;            // current position
-int tray_last_position = 0;               // last position
-bool tray_flag_calibration = LOW;         // flag to say if a calibration has been done or not
+int tray_next_position = 0;                           // next position
+int tray_current_position = 0;                        // current position
+int tray_last_position = 0;                           // last position
+bool tray_flag_calibration = LOW;                     // flag to say if a calibration has been done or not
 bool tray_flag_calibration_ongoing = LOW;
-int temp_tray_position = 0;               // global variable to control fwd/bwd movement of tray
-int tray_home_position = 0;               // tray home position
-const int tray_max_positions = 10;        // amount of positions
-bool flag_sequence = 0;                   // flag to say when the tray is coming back as part of a sequence and not from manual movement
-bool flag_calibration = 0;                // flag to say when the tray is coming back as part of a CALIBRATION SEQUENCE
-volatile bool interrupt_flag_HOME = LOW;  // flag to signal that has gone to the interrupt and back
-volatile bool interrupt_flag_END = LOW;   // flag to signal that has gone to the interrupt and back
+int temp_tray_position = 0;                           // global variable to control fwd/bwd movement of tray
+int tray_home_position = 0;                           // tray home position
+const int tray_max_positions = 10;                    // amount of positions
+bool flag_sequence = 0;                               // flag to say when the tray is coming back as part of a sequence and not from manual movement
+bool flag_calibration = 0;                            // flag to say when the tray is coming back as part of a CALIBRATION SEQUENCE
+volatile bool interrupt_flag_HOME = LOW;              // flag to signal that has gone to the interrupt and back
+volatile bool interrupt_flag_END = LOW;               // flag to signal that has gone to the interrupt and back
 
 // OUTPUT
 long int steps_mm = 0;
 long int travel_steps = 0;
 // TRAY SETTINGS
 const int microstepping = 16;             // DEPENDS ON DRIVER -> TMC2130 = 16, TB6600 = 4
-const int leadscrew_pitch = 8; // FIXED
+const int leadscrew_pitch = 8;            // FIXED: axle characteristic
 // POSITIONS SETTINGS
 const long int tray_position_interval = 20;         // distance between each position
 const long int tray_position_start_stop_delta = 12; // used in calibration. distance between sensors and first/last position
@@ -1655,8 +1655,8 @@ void loop()
             Serial.println(F("Operation will start now ..."));
             BlinkLED(LED_START, 125, 50);
 
-            // Move to filling position 0
-            rotate_tray(Tray_Speed, (2 * tray_position_start_stop_delta), TRAY_STEP, TRAY_ENABLE);
+            //  Move to filling position 0
+            //  rotate_tray(Tray_Speed, (2 * tray_position_start_stop_delta), TRAY_STEP, TRAY_ENABLE);
 
             delay(SECONDS1);
             flag_sequence = HIGH;
