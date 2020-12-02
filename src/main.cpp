@@ -810,7 +810,7 @@ void rotate_tray(long int _speed, long int _position_space_mm, int step_pin1, in
   digitalWrite(LED_SENSOR1, LOW);
   digitalWrite(LED_SENSOR2, LOW);
 
-  long int temp_motor_steps = 0;
+  unsigned long int temp_motor_steps = 0;
   long int temp_speed_us = 0;
 
   temp_speed_us = calculate_speed(_speed, stepsPerRevolution_tray);
@@ -833,20 +833,21 @@ void rotate_motor(unsigned long int _speed, long int temp_motor_steps, int step_
 
   digitalWrite(enable_pin1, LOW); // TURN-ON DRIVER
 
-  for (int i = 0; i < temp_motor_steps; i++) // rotate motor a given number of temp_motor_steps at a _speed using step_pin1 and enable_pin1
+
+  for (unsigned long int i = 0; i < temp_motor_steps; i++) // rotate motor a given number of temp_motor_steps at a _speed using step_pin1 and enable_pin1
   {
     digitalWrite(step_pin1, HIGH);
     delayMicroseconds(_speed);
     digitalWrite(step_pin1, LOW);
     delayMicroseconds(_speed);
     if ((interrupt_flag_HOME == HIGH && interrupt_flag_END == HIGH))
-      //return -1;        // STOPS immediatelly from rotating. // function is returning a value in non-returning function
-      break;
+      {
+        break;
+      }
   }
   Serial.println("MOTOR STOPS!");
-//  delayMicroseconds((unsigned int)1000000);
   delay(SECONDS1);
-  digitalWrite(enable_pin1, HIGH); // TURN-OFF DRIVER
+  digitalWrite(enable_pin1, HIGH); // TURN-OFF DRIVER - TEST
 
   Serial.print("Motor Steps: ");
   Serial.println(temp_motor_steps);
