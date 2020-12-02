@@ -122,6 +122,7 @@ long int system_calibration_calculated = 0.0;
 // MOTORS
 const long int stepsPerRevolution_tray = 200;         // number of steps needed for one revolution
 const long int stepsPerRevolution_pumps = 200;        // number of steps needed for one revolution
+const int microstepping_pumps = 4;                    // microstepping factor in stepper motor driver
 const int Tray_Speed = 1200;                          // Speed in RPM
 const int Pump_Speed = 1000;                          // Speed in RPM
 
@@ -143,12 +144,12 @@ volatile bool interrupt_flag_END = LOW;               // flag to signal that has
 long int steps_mm = 0;
 long int travel_steps = 0;
 // TRAY SETTINGS
-const int microstepping = 16;             // DEPENDS ON DRIVER -> TMC2130 = 16, TB6600 = 4
-const int leadscrew_pitch = 8;            // FIXED: axle characteristic
+const int microstepping = 16;                                     // DEPENDS ON DRIVER -> TMC2130 = 16, TB6600 = 4
+const int leadscrew_pitch = 8;                                    // FIXED: axle characteristic
 // POSITIONS SETTINGS
-const long int tray_position_interval = 20;         // distance between each position
-const long int tray_position_start_stop_delta = 12; // used in calibration. distance between sensors and first/last position
-const long int tray_position_calibration_interval = 500; // used in calibration. distance between sensors and first/last position
+const long int tray_position_interval = 43;                       // distance between each position
+const long int tray_position_start_stop_delta = 12;               // used in calibration. distance between sensors and first/last position
+//const long int tray_position_calibration_interval = 500;        // used in calibration. distance between sensors and first/last position
 long int tray_position_movement = 0;
 #define MINUTES 60
 
@@ -168,13 +169,13 @@ boolean entered_menu = 0;
 boolean selected_option = 0;
 boolean flag_option = LOW;
 int iterator = 0;
-#define DEBOUNCE_TIME 200
-#define MENU_GENERAL_TIME 50
-#define SECONDS5 5000
-#define SECONDS2 2000
-#define SECONDS1 1000
-#define SECONDS05 500
-#define SECONDS025 250
+#define DEBOUNCE_TIME       200
+#define MENU_GENERAL_TIME    50
+#define SECONDS5           5000
+#define SECONDS2           2000
+#define SECONDS1           1000
+#define SECONDS05           500
+#define SECONDS025          250
 
 enum menu_list
 {
@@ -352,7 +353,6 @@ void eeprom_resetsettings()
 
 boolean update_lcd()
 {
-
   if (flag_lcd_update_change_value == HIGH)
   {
     lcd.clear(); // clear display and set cursor in origin
@@ -619,7 +619,7 @@ long int volume_calibration_steps(int volumetofill)
   //Serial.print("TEMP Volume: ");
   //Serial.println(temp_volume);  
 
-  pump_steps = temp_volume * (stepsPerRevolution_pumps / system_calibration_constant);
+  pump_steps = temp_volume * ((stepsPerRevolution_pumps * microstepping_pumps)/ system_calibration_constant);
 
   Serial.print("Volume to Fill: ");
   Serial.print(volumetofill);
@@ -686,6 +686,8 @@ void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin
       delayMicroseconds(temp_speed_us);
     }
 
+    delay(SECONDS1);
+
     digitalWrite(enable_pin1, HIGH);
 
     delay(SECONDS025);
@@ -708,6 +710,8 @@ void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin
       digitalWrite(PUMP2_STEP, LOW);
       delayMicroseconds(temp_speed_us);
     } // if Serial.print here then motor will sound like it is halting between rotations. Alternative is to change this cycle from rotation base to step based.
+
+    delay(SECONDS1);
 
     digitalWrite(enable_pin1, HIGH);
     digitalWrite(enable_pin2, HIGH);
@@ -735,6 +739,8 @@ void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin
       digitalWrite(PUMP3_STEP, LOW);
       delayMicroseconds(temp_speed_us);
     }
+
+    delay(SECONDS1);
 
     digitalWrite(enable_pin1, HIGH);
     digitalWrite(enable_pin2, HIGH);
@@ -838,7 +844,8 @@ void rotate_motor(unsigned long int _speed, long int temp_motor_steps, int step_
       break;
   }
   Serial.println("MOTOR STOPS!");
-  delayMicroseconds((unsigned int)1000000);
+//  delayMicroseconds((unsigned int)1000000);
+  delay(SECONDS1);
   digitalWrite(enable_pin1, HIGH); // TURN-OFF DRIVER
 
   Serial.print("Motor Steps: ");
