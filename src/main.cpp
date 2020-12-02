@@ -658,7 +658,7 @@ void rotate_pump(unsigned long int volume_to_fill, int step_pin1, int enable_pin
   
   Serial.print(F("PUMP SPEED: "));
   Serial.print(temp_speed_us);
-  Serial.print(F(" uS"));
+  Serial.println(F(" uS"));
 
   digitalWrite(LED_PUMP, HIGH); // turn ON pump LED
 
