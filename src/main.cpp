@@ -65,23 +65,23 @@ int eepromReadInt(int address);
 // 66 - Used GIT to commit the first version
 
 // BUTTONS
-#define BUTTON_AUTO_MAN 17
-#define BUTTON_AUX_TRAY 16
-#define BUTTON_START 19
-#define BUTTON_NOLABEL1 14
-#define BUTTON_NOLABEL2 15
-#define BUTTON_STOP 18
+#define BUTTON_AUTO_MAN 17          // AKA DOWN
+#define BUTTON_AUX_TRAY 16          // AKA UP
+#define BUTTON_START 19             // OK
+#define BUTTON_NOLABEL1 14          // assumption that is PWR_OK
+#define BUTTON_NOLABEL2 15          // AKA AUX
+#define BUTTON_STOP 18              // OK
 
 // LED'S
-#define LED_STOP 42
-#define LED_START 46
-#define LED_SENSOR1 44
-#define LED_PUMP 45
-#define LED_SENSOR2 43
+#define LED_STOP 42                 // OK
+#define LED_START 46                // OK
+#define LED_SENSOR1 44              // OK
+#define LED_PUMP 45                 // OK
+#define LED_SENSOR2 43              // OK
 
-#define LED_AUTOMAN 49
-#define LED_AUXTRAY 48
-#define LED_NOLABEL 47
+#define LED_AUTOMAN 49              // AKA DOWN
+#define LED_AUXTRAY 48              // AKA UP
+#define LED_NOLABEL 47              // AKA AUX
 
 #define LED_PIN 13
 
@@ -111,8 +111,8 @@ int eepromReadInt(int address);
 #define INT_SENSOR_2 3
 
 // DIRECTIONS
-#define CW 1
-#define CC 0
+#define CW 0
+#define CC 1
 
 //CALIBRATION -----------------------------------------------------------------------------
 float system_calibration_constant = 0.6;
@@ -123,7 +123,8 @@ long int system_calibration_calculated = 0.0;
 const long int stepsPerRevolution_tray = 200;         // number of steps needed for one revolution
 const long int stepsPerRevolution_pumps = 200;        // number of steps needed for one revolution
 const int microstepping_pumps = 4;                    // microstepping factor in stepper motor driver
-const int Tray_Speed = 1200;                          // Speed in RPM
+const int microstepping_tray = 8;                     // DEPENDS ON DRIVER -> TMC2130 = 16, TB6600 = 4, CL57Y = 8
+const int Tray_Speed = 1200;                          // Speed in RPM - 1200 previously
 const int Pump_Speed = 1000;                          // Speed in RPM
 
 // TRAY
@@ -144,7 +145,6 @@ volatile bool interrupt_flag_END = LOW;               // flag to signal that has
 long int steps_mm = 0;
 long int travel_steps = 0;
 // TRAY SETTINGS
-const int microstepping = 16;                                     // DEPENDS ON DRIVER -> TMC2130 = 16, TB6600 = 4
 const int leadscrew_pitch = 8;                                    // FIXED: axle characteristic
 // POSITIONS SETTINGS
 const long int tray_position_interval = 43;                       // distance between each position
@@ -767,6 +767,9 @@ int tray_calibration()
   {
     // use (max positions * space between positions) + (start_stop_delta) as max movement possible in any direction
     Serial.println(F("Rotating ..."));
+    Serial.print(F("Calibrating: "));
+    Serial.print((tray_max_positions * tray_position_interval) + (tray_position_start_stop_delta));
+    Serial.println(F(" mm"));
     rotate_tray(Tray_Speed, ((tray_max_positions * tray_position_interval) + (tray_position_start_stop_delta)), TRAY_STEP, TRAY_ENABLE);
     // calibration disabled due to inclusion of new function for motor rotation
   }
@@ -859,7 +862,7 @@ void rotate_motor(unsigned long int _speed, long int temp_motor_steps, int step_
 long int calculate_travel_mm(long int ftravel_mm)
 {
 
-  travel_steps = ftravel_mm * ((stepsPerRevolution_tray * microstepping) / leadscrew_pitch);
+  travel_steps = ftravel_mm * ((stepsPerRevolution_tray * microstepping_tray) / leadscrew_pitch);
 
   //  Serial.print("FUNCTION CALCULATE_TRAVEL: ");
   //  Serial.print(travel_steps);
